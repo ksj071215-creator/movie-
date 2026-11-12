@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영화 상세 정보 - 클론코딩</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* 메뉴 활성화 표시 */
+    .navbar nav a.active {
+      color: #e50914;
+      font-weight: bold;
+    }
+
+    /* 카드 클릭 가능 표시 및 이미지 비율 고정 */
+    .card {
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: scale(1.03);
+    }
+    .card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* 화면 전환용 섹션 숨김 처리 */
+    .hidden {
+      display: none !important;
+    }
+
+    /* 팝업창(모달) 배경 및 박스 디자인 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-overlay.show {
+      display: flex;
+    }
+    .modal-box {
+      background-color: #181818;
+      color: #ffffff;
+      width: 90%;
+      max-width: 500px;
+      padding: 30px;
+      border-radius: 10px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      border: 1px solid #333;
+    }
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      color: #aaa;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .modal-close:hover {
+      color: #fff;
+    }
+    .modal-tag {
+      display: inline-block;
+      background-color: #e50914;
+      color: #fff;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    .modal-box h2 {
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
+    .modal-box p {
+      color: #ccc;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 헤더 / 상단 바 -->
+  <header class="navbar">
+    <div class="logo" style="cursor:pointer;" onclick="switchTab('home')">MOVIE FLIX</div>
+    <nav>
+      <a href="#" id="nav-home" class="active" onclick="switchTab('home'); return false;">홈</a>
+      <a href="#" id="nav-movies" onclick="switchTab('movies'); return false;">영화</a>
+      <a href="#" id="nav-saved" onclick="switchTab('saved'); return false;">보관함</a>
+    </nav>
+  </header>
+
+  <!-- 메인 히어로 섹션 (홈 화면에서만 표시) -->
+  <section class="hero" id="hero-section" style="background-image: linear-gradient(to top, #141414 10%, rgba(0,0,0,0.4) 90%), url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80'); background-size: cover; background-position: center;">
+    <div class="hero-content">
+      <h1 class="movie-title">인터스텔라 (Interstellar)</h1>
+      <p class="movie-desc">
+        세계 각국의 정부와 경제가 완전히 붕괴된 미래. 인류의 시급한 문제를 해결하기 위해 시공간의 틈을 찾아 우주를 탐험하는 인류의 마지막 도전이 시작된다.
+      </p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="openPlayModal('인터스텔라 (Interstellar)')">▶ 재생하기</button>
+        <button class="btn btn-secondary" onclick="openDetailModal('인터스텔라 (Interstellar)', '2014 · SF/모험 · 169분', '세계 각국의 정부와 경제가 완전히 붕괴된 미래. 인류의 시급한 문제를 해결하기 위해 시공간의 틈을 찾아 우주를 탐험하는 인류의 마지막 도전이 시작된다.')">ⓘ 상세 정보</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 영화 정보 & 관련 추천 카드 -->
+  <main class="container" id="main-content">
+    <h2 id="section-heading">관련 추천 작품</h2>
+    <div class="grid-container" id="movie-grid">
+      <div class="card" onclick="openDetailModal('인셉션 (Inception)', '2010 · SF/액션 · 148분', '타인의 꿈에 들어가 생각을 훔치는 특수 보안요원 코브. 그에게 생각을 훔치는 것이 아닌, 심어야 하는 불가능한 미션이 주어진다.')">
+        <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=500&q=80" alt="인셉션 포스터">
+        <h3>인셉션</h3>
+        <p>드림 스틸러의 꿈속 침투 작전</p>
+      </div>
+      <div class="card" onclick="openDetailModal('마션 (The Martian)', '2015 · SF/드라마 · 144분', '화성 탐사 도중 모래폭풍을 만나 홀로 낙오된 마크 와트니. 지구로 돌아가기 위해 화성에서 감자를 키우며 생존을 시작한다.')">
+        <img src="https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=500&q=80" alt="마션 포스터">
+        <h3>마션</h3>
+        <p>화성에서 홀로 살아남기</p>
+      </div>
+      <div class="card" onclick="openDetailModal('그래비티 (Gravity)', '2013 · SF/스릴러 · 91분', '허블 우주망원경을 수리하던 중 폭파된 인공위성의 잔해와 부딪히면서 광활한 우주 한가운데 홀로 남겨진 스톤 박사의 사투.')">
+        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&q=80" alt="그래비티 포스터">
+        <h3>그래비티</h3>
+        <p>우주 고립극에서 빠져나가기</p>
+      </div>
+      <div class="card" onclick="openDetailModal('테넷 (Tenet)', '2020 · SF/액션 · 150분', '시간의 흐름을 뒤집는 인버전을 통해 현재와 미래를 오가며 제3차 세계대전을 막아야 하는 특수 요원의 작전.')">
+        <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500&q=80" alt="테넷 포스터">
+        <h3>테넷</h3>
+        <p>시간을 거스르는 인버전 작전</p>
+      </div>
+    </div>
+
+    <!-- 보관함 탭 전용 안내 화면 -->
+    <div id="saved-empty" class="hidden" style="text-align:center; padding: 60px 20px; color: #aaa;">
+      <p style="font-size: 18px; margin-bottom: 10px;">아직 보관함에 찜한 영화가 없습니다.</p>
+      <p style="font-size: 14px;">영화 카드를 클릭해 상세 정보에서 '찜하기'를 눌러보세요!</p>
+    </div>
+  </main>
+
+  <!-- 상세 정보 팝업창 (모달) -->
+  <div class="modal-overlay" id="detail-modal" onclick="closeModalOnBg(event, 'detail-modal')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('detail-modal')">&times;</button>
+      <span class="modal-tag" id="modal-meta">2014 · SF</span>
+      <h2 id="modal-title">영화 제목</h2>
+      <p id="modal-desc">영화 줄거리 설명</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="modal-play-btn">▶ 바로 재생</button>
+        <button class="btn btn-secondary" onclick="toggleBookmark()">+ 보관함 찜하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 재생 화면 팝업창 (모달) -->
+  <div class="modal-overlay" id="play-modal" onclick="closeModalOnBg(event, 'play-modal')">
+    <div class="modal-box" style="text-align:center;">
+      <button class="modal-close" onclick="closeModal('play-modal')">&times;</button>
+      <span class="modal-tag">NOW PLAYING</span>
+      <h2 id="play-title">영화 재생 중</h2>
+      <div style="background:#000; height:180px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:15px; border:1px solid #333;">
+        <p style="margin:0; color:#e50914; font-weight:bold;">▶ 영상 스트리밍 플레이어 화면</p>
+      </div>
+      <button class="btn btn-secondary" onclick="closeModal('play-modal')">닫기</button>
+    </div>
+  </div>
+
+  <script>
+    let savedMovies = [];
+    let currentSelectedMovie = null;
+
+    function switchTab(tab) {
+      document.querySelectorAll('.navbar nav a').forEach(a => a.classList.remove('active'));
+      document.getElementById('nav-' + tab).classList.add('active');
+
+      const hero = document.getElementById('hero-section');
+      const heading = document.getElementById('section-heading');
+      const grid = document.getElementById('movie-grid');
+      const savedEmpty = document.getElementById('saved-empty');
+
+      if (tab === 'home') {
+        hero.classList.remove('hidden');
+        heading.textContent = '관련 추천 작품';
+        grid.classList.remove('hidden');
+        savedEmpty.classList.add('hidden');
+        renderAllMovies();
+      } else if (tab === 'movies') {
+        hero.classList.add('hidden');
+        heading.textContent = '전체 영화 목록';
+        grid.classList.remove('hidden');
+        savedEmpty.classList.add('hidden');
+        renderAllMovies();
+      } else if (tab === 'saved') {
+        hero.classList.add('hidden');
+        heading.textContent = '내가 찜한 보관함';
+        if (savedMovies.length === 0) {
+          grid.classList.add('hidden');
+          savedEmpty.classList.remove('hidden');
+        } else {
+          grid.classList.remove('hidden');
+          savedEmpty.classList.add('hidden');
+          renderSavedMovies();
+        }
+      }
+    }
+
+    function openDetailModal(title, meta, desc, imgUrl) {
+      currentSelectedMovie = { title, meta, desc, imgUrl };
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-meta').textContent = meta;
+      document.getElementById('modal-desc').textContent = desc;
+      document.getElementById('modal-play-btn').onclick = function() {
+        closeModal('detail-modal');
+        openPlayModal(title);
+      };
+      document.getElementById('detail-modal').classList.add('show');
+    }
+
+    function openPlayModal(title) {
+      document.getElementById('play-title').textContent = title;
+      document.getElementById('play-modal').classList.add('show');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    function closeModalOnBg(event, id) {
+      if (event.target.id === id) {
+        closeModal(id);
+      }
+    }
+
+    function toggleBookmark() {
+      if (!currentSelectedMovie) return;
+      const exists = savedMovies.some(m => m.title === currentSelectedMovie.title);
+      if (!exists) {
+        savedMovies.push(currentSelectedMovie);
+        alert('보관함에 추가되었습니다!');
+      } else {
+        alert('이미 보관함에 있는 영화입니다.');
+      }
+    }
+
+    const defaultGridHTML = document.getElementById('movie-grid').innerHTML;
+
+    function renderAllMovies() {
+      document.getElementById('movie-grid').innerHTML = defaultGridHTML;
+    }
+
+    function renderSavedMovies() {
+      const grid = document.getElementById('movie-grid');
+      grid.innerHTML = savedMovies.map((m) => `
+        <div class="card" onclick="openDetailModal('${m.title}', '${m.meta}', '${m.desc}')">
+          <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=500&q=80" alt="${m.title}">
+          <h3>${m.title}</h3>
+          <p>${m.meta}</p>
+        </div>
+      `).join('');
+    }
+  </script>
+
+</body>
+</html>
